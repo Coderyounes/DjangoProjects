@@ -40,7 +40,7 @@ INSTALLED_APPS = [
 
     'djoser',
     'rest_framework.authtoken',
-    'rest_framework_simplejwt.token_blacklist'
+    'rest_framework_simplejwt.token_blacklist',
     'posts.apps.PostsConfig',
     'comments.apps.CommentsConfig',
     'user.apps.UserConfig',
