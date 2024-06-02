@@ -33,8 +33,14 @@ class PostsSerializer(serializers.ModelSerializer):
         Validate the existence of fields in data
         return: Raise ValidationError or return data
         """
-        required = ['title', 'content']
+        required = ['title', 'content', 'user']
         for field in required:
             if field not in data:
                 raise serializers.ValidationError(f'{field} is required')
         return data
+
+    def update(self, instance, validated_data):
+        validated_data.pop('title', None)
+        validated_data.pop('user', None)
+
+        return super().update(instance, validated_data)

@@ -14,12 +14,42 @@ def index(request):
 
 @api_view(['GET'])
 def all_posts(request):
+    # OPTIMIZE: implement Pagination
     posts = Posts.objects.all()
     if posts:
         serializer = PostsSerializer(posts, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response({'error': 'emtpy feeds'}, status=status.HTTP_404_NOT_FOUND)
 
-# TODO: view add posts
-# TODO: view update post
-# TODO: view Delete post
+
+@api_view(['POST'])
+def add_post(request):
+    data = request.data
+    # data['user'] = request.user.id # PS: use permission_classes isAuthenticated Decorator
+    serializer = PostsSerializer(data=data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response({'message': 'New post Created'}, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+@api_view(['PUT'])
+def update_post(request, pk):
+    try:
+        post = Posts.objects.get(id=pk)
+        if request.data.get('user') == post.user.id:
+            serializer = PostsSerializer(post, data=request.data)
+            if serializer.is_valid():
+                serializer.save()
+                return Response({'message': 'Article content'}, status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        else:
+            return Response({'error': 'Unauthorized'}, status=status.HTTP_401_UNAUTHORIZED)
+    except ObjectDoesNotExist:
+        return Response({'error': 'Not Found'}, status=status.HTTP_404_NOT_FOUND)
+
+
+@api_view(['DELETE'])
+def delete_post(request, pk):
+    pass
